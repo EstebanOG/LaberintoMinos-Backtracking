@@ -5,6 +5,7 @@
  */
 package laberintominos.backtracking;
 
+import logica.Logica;
 import vista.Vista;
 
 /**
@@ -17,7 +18,9 @@ public class LaberintoMinosBacktracking {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Vista vista = new Vista();
+        Logica logica = new Logica();
+        //Vista vista = new Vista();
+        
     }
     
 }

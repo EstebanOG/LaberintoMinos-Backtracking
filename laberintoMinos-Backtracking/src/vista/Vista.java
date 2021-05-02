@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package vista;
 
 import java.awt.Color;
@@ -14,21 +9,19 @@ import javax.swing.JPanel;
  * @author Usuario
  */
 public class Vista extends JFrame{
-    private Mapa mapa;
+    public Mapa mapa;
     private JPanel pPrincipal;
-    /**
-     * 1: Bloque
-     * 2: Camino
-     */
+   // private Logica logica;
+    private boolean buscarSolucion = true;
     private int tablero[][] = {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                               {0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
+                               {3,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
                                {1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1},
                                {1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1},
                                {1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1},
                                {1,0,1,0,1,0,0,0,0,1,0,0,0,0,0,0,1,0,1,0,1},
                                {1,0,1,0,1,0,1,1,1,1,0,1,1,1,1,0,1,0,1,0,1},
                                {1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1},
-                               {1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,1,1,0,1},
+                               {1,0,1,0,1,0,1,0,2,0,0,0,0,0,1,0,1,1,1,0,1},
                                {1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1},
                                {1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,0,1,0,1},
                                {1,0,1,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,1,0,1},
@@ -56,15 +49,24 @@ public class Vista extends JFrame{
         pPrincipal = new JPanel();
         pPrincipal.setBounds(0, 0, 900, 700);
         pPrincipal.setLayout(null);
-        pPrincipal.setBackground(Color.red);
         this.getContentPane().add(pPrincipal);
         
         //Panel mapa
         mapa = new Mapa(tablero);
+        //mapa.repintarMapa(tablero);
         pPrincipal.add(mapa);
         mapa.setVisible(false);
         mapa.setVisible(true);
         
         pPrincipal.repaint();
     }
+    
+    public Mapa getMapa() {
+        return mapa;
+    }
+
+    public void setMapa(Mapa mapa) {
+        this.mapa = mapa;
+    }
+    
 }
