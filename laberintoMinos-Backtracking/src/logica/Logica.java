@@ -100,17 +100,33 @@ public class Logica{
                 if(!minoVivo){
                     notificar(3);
                     numJovenesEncontrados++;
+                    tableroAct[x - 1][y] = 0;
+                }else{
+                    tableroAct[x - 1][y] = 4;
                 }
             }
             
-            tableroAct[x][y] = 0;
+            if(tableroAct[x - 1][y] == 0)
+                tableroAct[x - 1][y] = 3;
             
+            if(tableroAct[x][y] != 4)
+                tableroAct[x][y] = 0;
+//            tableroAct[x - 1][y] = 3;
             contarPasos();
             tablero = tableroAct;
             camino.add("" + x + "" + y + "" + (x - 1) + "" + y);
             recorrer((x - 1), y, tableroAct, "arriba");
-            tableroAct[x][y] = 3;
-            tableroAct[x - 1][y] = 0;
+            
+            if(tableroAct[x - 1][y] == 4){
+                tableroAct[x][y] = 3;
+                tableroAct[x - 1][y] = 4;
+            }else if(tableroAct[x][y] == 4){
+                tableroAct[x - 1][y] = 0;
+            }else{
+                tableroAct[x][y] = 3;
+                tableroAct[x - 1][y] = 0;
+            }
+            
             contarPasos();
         }
         vista.getMapa().repintarMapa(tableroAct);
@@ -120,24 +136,39 @@ public class Logica{
             if (tableroAct[x][y + 1] == 2) {
                 notificar(0);
                 minoVivo = false;
+                tableroAct[x][y + 1] = 3;
             }
             
             if(tableroAct[x][y + 1] == 4){
                 if(!minoVivo){
                     notificar(3);
                     numJovenesEncontrados++;
+                    tableroAct[x][y + 1] = 0;
+                }else{
+                    tableroAct[x][y + 1] = 4;
                 }
             }
+            if(tableroAct[x][y + 1] == 0)
+                tableroAct[x][y + 1] = 3;
             
+            if(tableroAct[x][y] != 4)
+                tableroAct[x][y] = 0;
             
-            tableroAct[x][y] = 0;
-            tableroAct[x][y + 1] = 3;
+            //tableroAct[x][y + 1] = 3;
             contarPasos();
             tablero = tableroAct;
             camino.add("" + x + "" + y + "" + x + "" + (y + 1));
             recorrer(x, (y + 1), tableroAct, "derecha");
-            tableroAct[x][y] = 3;
-            tableroAct[x][y + 1] = 0;
+            if(tableroAct[x][y + 1] == 4){
+                tableroAct[x][y] = 3;
+                tableroAct[x][y + 1] = 4;
+            }else if(tableroAct[x][y] == 4){
+                tableroAct[x][y + 1] = 0;
+            }else{
+                tableroAct[x][y] = 3;
+                tableroAct[x][y + 1] = 0;
+            }
+            
             contarPasos();
         }
         vista.getMapa().repintarMapa(tableroAct);
@@ -147,22 +178,41 @@ public class Logica{
             if (tableroAct[x + 1][y] == 2) {
                 notificar(0);
                 minoVivo = false;
+                tableroAct[x + 1][y] = 3;
             }
             
             if(tableroAct[x + 1][y] == 4){
                 if(!minoVivo){
                     notificar(3);
                     numJovenesEncontrados++;
+                    tableroAct[x + 1][y] = 0;
+                }else{
+                    tableroAct[x + 1][y] = 4;
                 }
             }
-            tableroAct[x][y] = 0;
-            tableroAct[x + 1][y] = 3;
+            
+            if(tableroAct[x + 1][y] == 0)
+                tableroAct[x + 1][y] = 3;
+            
+            
+            if(tableroAct[x][y] != 4)
+                tableroAct[x][y] = 0;
+            
+            //tableroAct[x + 1][y] = 3;
             contarPasos();
             tablero = tableroAct;
             camino.add("" + x + "" + y + "" + (x + 1) + "" + y);
             recorrer((x + 1), y, tableroAct, "abajo");
-            tableroAct[x][y] = 3;
-            tableroAct[x + 1][y] = 0;
+            if(tableroAct[x + 1][y] == 4){
+                tableroAct[x][y] = 3;
+                tableroAct[x + 1][y] = 4;
+            }else if(tableroAct[x][y] == 4){
+                tableroAct[x + 1][y] = 0;
+            }else{
+                tableroAct[x][y] = 3;
+                tableroAct[x + 1][y] = 0;
+            }
+            
             contarPasos();
         }
         vista.getMapa().repintarMapa(tableroAct);
@@ -172,22 +222,40 @@ public class Logica{
             if (tableroAct[x][y - 1] == 2) {
                 notificar(0);
                 minoVivo = false;
+                tableroAct[x][y - 1] = 3;
             }
             
             if(tableroAct[x][y - 1] == 4){
                 if(!minoVivo){
                     notificar(3);
                     numJovenesEncontrados++;
+                    tableroAct[x][y - 1] = 0;
+                }else{
+                    tableroAct[x][y - 1] = 4;
                 }
             }
-            tableroAct[x][y] = 0;
-            tableroAct[x][y - 1] = 3;
+            
+            if(tableroAct[x][y - 1] == 0)
+                tableroAct[x][y - 1] = 3;
+            
+            if(tableroAct[x][y] != 4)
+                tableroAct[x][y] = 0;
+            //tableroAct[x][y - 1] = 3;
             contarPasos();
             tablero = tableroAct;
             camino.add("" + x + "" + y + "" + x + "" + (y - 1));
             recorrer(x, (y - 1), tableroAct, "izquierda");
-            tableroAct[x][y] = 3;
-            tableroAct[x][y - 1] = 0;
+            if(tableroAct[x][y - 1] == 4){
+               tableroAct[x][y] = 3;
+                tableroAct[x][y - 1] = 4; 
+            }else if(tableroAct[x][y] == 4){
+                tableroAct[x][y - 1] = 0;
+                
+            }else{
+                tableroAct[x][y] = 3;
+                tableroAct[x][y - 1] = 0;
+            }
+            
             contarPasos();
         }
         
@@ -253,7 +321,7 @@ public class Logica{
     
     private void pausar(){
         try {
-            Thread.sleep(10);
+            Thread.sleep(20);
         } catch (Exception e) {
             System.out.println(e);
         }
