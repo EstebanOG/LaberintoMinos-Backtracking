@@ -16,7 +16,7 @@ public class Logica{
      * 3: Perseo
      * 4: Jovenes
      */
-    private Vista vista = new Vista();
+    
     private int numPasos = 0,numPasosCambio = 13, numJovenes = 0, numJovenesEncontrados = 0;
     private boolean minoVivo = true, juego = true;
     private ArrayList<String> camino = new ArrayList<String>();
@@ -40,6 +40,8 @@ public class Logica{
                                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
                                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                                 };
+    private Vista vista = new Vista(tablero);
+    
     public Logica() {
         
         generarJovenes();
@@ -86,11 +88,21 @@ public class Logica{
     }
     
     public void recorrer(int x, int y, int[][] tableroAct, String pasoAnterior) {
-        //Movimiento derecha
+        
+        //Mostrar pasos realizados
+        //System.out.println(camino);
+        
         pausar();
         vista.getMapa().repintarMapa(tableroAct);
         
-        if (x>0 && juego && tableroAct[x - 1][y] != 1 && !camino.contains("" + x + "" + y + "" + (x - 1) + "" + y)) {
+        /**
+         * MOVIMIENTO ARRIBA
+         * numJovenesEncontrados == 0: Verifica que hasta el momento no se haya
+         * encontrado ningún joven, ya que de ser así, no será necesario seguir
+         * avanzando y Teseo empecerá a devolverse al punto de partida.
+         */
+        if (x>0 && juego && tableroAct[x - 1][y] != 1 && !camino.contains("" + x + "" + y + "" + (x - 1) + "" + y)
+                && numJovenesEncontrados == 0) {
             if (tableroAct[x - 1][y] == 2) {
                 notificar(0);
                 minoVivo = false;
@@ -132,7 +144,14 @@ public class Logica{
         vista.getMapa().repintarMapa(tableroAct);
         pausar();
         
-        if ( juego &&  tableroAct[x][y + 1] != 1 && !camino.contains("" + x + "" + y + "" + x + "" + (y + 1))) {
+        /**
+         * MOVIMIENTO DERECHA
+         * numJovenesEncontrados == 0: Verifica que hasta el momento no se haya
+         * encontrado ningún joven, ya que de ser así, no será necesario seguir
+         * avanzando y Teseo empecerá a devolverse al punto de partida.
+         */
+        if ( juego &&  tableroAct[x][y + 1] != 1 && !camino.contains("" + x + "" + y + "" + x + "" + (y + 1))
+                && numJovenesEncontrados == 0) {
             if (tableroAct[x][y + 1] == 2) {
                 notificar(0);
                 minoVivo = false;
@@ -174,7 +193,14 @@ public class Logica{
         vista.getMapa().repintarMapa(tableroAct);
         pausar();
         
-        if ( juego &&  tableroAct[x + 1][y] != 1 && !camino.contains("" + x + "" + y + "" + (x + 1) + "" + y)) {
+        /**
+         * MOVIMIENTO ABAJO
+         * numJovenesEncontrados == 0: Verifica que hasta el momento no se haya
+         * encontrado ningún joven, ya que de ser así, no será necesario seguir
+         * avanzando y Teseo empecerá a devolverse al punto de partida.
+         */
+        if ( juego &&  tableroAct[x + 1][y] != 1 && !camino.contains("" + x + "" + y + "" + (x + 1) + "" + y)
+                && numJovenesEncontrados == 0) {
             if (tableroAct[x + 1][y] == 2) {
                 notificar(0);
                 minoVivo = false;
@@ -218,7 +244,14 @@ public class Logica{
         vista.getMapa().repintarMapa(tableroAct);
         pausar();
         
-        if (y > 0 && juego &&  tableroAct[x][y - 1] != 1 && !camino.contains("" + x + "" + y + "" + x + "" + (y - 1))) {
+        /**
+         * MOVIMIENTO IZQUIERDA
+         * numJovenesEncontrados == 0: Verifica que hasta el momento no se haya
+         * encontrado ningún joven, ya que de ser así, no será necesario seguir
+         * avanzando y Teseo empecerá a devolverse al punto de partida.
+         */
+        if (y > 0 && juego &&  tableroAct[x][y - 1] != 1 && !camino.contains("" + x + "" + y + "" + x + "" + (y - 1))
+                && numJovenesEncontrados == 0) {
             if (tableroAct[x][y - 1] == 2) {
                 notificar(0);
                 minoVivo = false;
@@ -259,6 +292,15 @@ public class Logica{
             contarPasos();
         }
         
+        /**
+         * Se verifica si existen jovenes en la posición actual,
+         * al momento de retroceder en el algoritmo y los rescata.
+         */
+        if(tablero[x][y] == 4 && !minoVivo){
+            notificar(3);
+            numJovenesEncontrados++;
+            tableroAct[x][y] = 0;
+        }
         vista.getMapa().repintarMapa(tableroAct);
         pausar();
     }
@@ -347,7 +389,7 @@ public class Logica{
                 System.exit(0);
                 break;
             case 5:
-                JOptionPane.showMessageDialog(null, "Juego terminado.");
+                JOptionPane.showMessageDialog(null, "Juego terminado.\nJovenes rescatados: "+numJovenesEncontrados);
                 break;
             default:
                 break;
