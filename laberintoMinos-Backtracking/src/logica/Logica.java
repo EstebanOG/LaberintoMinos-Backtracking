@@ -1,6 +1,7 @@
 package logica;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.JOptionPane;
 import vista.Vista;
 
@@ -13,13 +14,14 @@ public class Logica{
      * 0: Camino
      * 1: Bloque
      * 2: Minotauro
-     * 3: Perseo
+     * 3: Teseo
      * 4: Jovenes
      */
     
-    private int numPasos = 0,numPasosCambio = 13, numJovenes = 0, numJovenesEncontrados = 0;
+    private int numPasos = 0,numPasosCambio = 13, numJovenes = 0, numJovenesEncontrados = 0, xAnterior = 0, yAnterior = 0;
     private boolean minoVivo = true, juego = true;
     private ArrayList<String> camino = new ArrayList<String>();
+    private int[] posicionesJovenes = new int[6];
     private int tablero[][] = {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                                {3,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
                                {1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1},
@@ -51,7 +53,7 @@ public class Logica{
                 juego = false;
             }
             camino.clear();
-            recorrer(1,0,tablero,"");
+            recorrer(1,0,tablero);
             
         }
         notificar(5);
@@ -87,9 +89,9 @@ public class Logica{
         
     }
     
-    public void recorrer(int x, int y, int[][] tableroAct, String pasoAnterior) {
+    public void recorrer(int x, int y, int[][] tableroAct) {
         
-        //Mostrar pasos realizados
+        //Mostrar pasos realizados(guardados)
         //System.out.println(camino);
         
         pausar();
@@ -97,18 +99,34 @@ public class Logica{
         
         /**
          * MOVIMIENTO ARRIBA
+         * x>0: Verifica los bordes del laberinto, ya que evita que Teseo se
+         *      mueva a una posición invalda.
+         * 
+         * tableroAct[x-1][y] != 1: Verifica si la casilla que se encuentra
+         * arriba no es un muro.
+         * 
+         * camino.contains(...): Verifica si ese paso ya se realizó.
+         * 
          * numJovenesEncontrados == 0: Verifica que hasta el momento no se haya
          * encontrado ningún joven, ya que de ser así, no será necesario seguir
          * avanzando y Teseo empecerá a devolverse al punto de partida.
          */
-        if (x>0 && juego && tableroAct[x - 1][y] != 1 && !camino.contains("" + x + "" + y + "" + (x - 1) + "" + y)
+        if (x>0 && tableroAct[x - 1][y] != 1 && !camino.contains("" + x + "" + y + "" + (x - 1) + "" + y)
                 && numJovenesEncontrados == 0) {
+            
+            //Se verifica si el minotauro se encuentra arriba
             if (tableroAct[x - 1][y] == 2) {
                 notificar(0);
+                //Se mata al minotauro
                 minoVivo = false;
                 tableroAct[x - 1][y] = 3;
             }
+            
+            // Se verifica si hay un joven
             if(tableroAct[x - 1][y] == 4){
+                
+                //Se verifica si el minotaruo está vivo y de no ser así, se
+                //recoge al niño y se notifica
                 if(!minoVivo){
                     notificar(3);
                     numJovenesEncontrados++;
@@ -118,20 +136,46 @@ public class Logica{
                 }
             }
             
+            /**
+             * Si la casilla que se encuentra arriba esta vacía, se ubica a
+             * Teseo en esa posición.
+             */
             if(tableroAct[x - 1][y] == 0)
                 tableroAct[x - 1][y] = 3;
             
+            /**
+             * Se borra borra posición anterior de Teseo.
+             */
             if(tableroAct[x][y] != 4)
                 tableroAct[x][y] = 0;
-//            tableroAct[x - 1][y] = 3;
-            contarPasos();
-            tablero = tableroAct;
-            camino.add("" + x + "" + y + "" + (x - 1) + "" + y);
-            recorrer((x - 1), y, tableroAct, "arriba");
             
+                
+            contarPasos();
+            
+            /**
+             * Se agrega paso al arreglo de pasos realizados por teseo.
+             */
+            camino.add("" + x + "" + y + "" + (x - 1) + "" + y);
+            
+            /**
+             * Se guarda paso actual.
+             */
+            xAnterior = x;
+            yAnterior = y;
+            
+            /**
+             * Se vuelve a llamar al método recorrer, pero se le pasa por
+             * parametroes, la nueva posición de Teseo y el nuevo tablero.
+             */
+            recorrer((x - 1), y, tableroAct);
+            
+            /**
+             * Se borran los cambios producidos en el tablero, antes de realizar
+             * el llamado recursivo.
+             */
             if(tableroAct[x - 1][y] == 4){
                 tableroAct[x][y] = 3;
-                tableroAct[x - 1][y] = 4;
+//                tableroAct[x - 1][y] = 4;
             }else if(tableroAct[x][y] == 4){
                 tableroAct[x - 1][y] = 0;
             }else{
@@ -146,11 +190,17 @@ public class Logica{
         
         /**
          * MOVIMIENTO DERECHA
+         * 
+         * tableroAct[x][y + 1] != 1: Verifica si la casilla que se encuentra
+         * a la derecha no es un muro.
+         * 
+         * camino.contains(...): Verifica si ese paso ya se realizó.
+         * 
          * numJovenesEncontrados == 0: Verifica que hasta el momento no se haya
          * encontrado ningún joven, ya que de ser así, no será necesario seguir
          * avanzando y Teseo empecerá a devolverse al punto de partida.
          */
-        if ( juego &&  tableroAct[x][y + 1] != 1 && !camino.contains("" + x + "" + y + "" + x + "" + (y + 1))
+        if (tableroAct[x][y + 1] != 1 && !camino.contains("" + x + "" + y + "" + x + "" + (y + 1))
                 && numJovenesEncontrados == 0) {
             if (tableroAct[x][y + 1] == 2) {
                 notificar(0);
@@ -173,14 +223,15 @@ public class Logica{
             if(tableroAct[x][y] != 4)
                 tableroAct[x][y] = 0;
             
-            //tableroAct[x][y + 1] = 3;
             contarPasos();
-            tablero = tableroAct;
             camino.add("" + x + "" + y + "" + x + "" + (y + 1));
-            recorrer(x, (y + 1), tableroAct, "derecha");
+            xAnterior = x;
+            yAnterior = y;
+            recorrer(x, (y + 1), tableroAct);
+            
             if(tableroAct[x][y + 1] == 4){
                 tableroAct[x][y] = 3;
-                tableroAct[x][y + 1] = 4;
+                //tableroAct[x][y + 1] = 4;
             }else if(tableroAct[x][y] == 4){
                 tableroAct[x][y + 1] = 0;
             }else{
@@ -195,11 +246,17 @@ public class Logica{
         
         /**
          * MOVIMIENTO ABAJO
+         * 
+         * tableroAct[x + 1][y] != 1: Verifica si la casilla que se encuentra
+         * abajo no es un muro.
+         * 
+         * camino.contains(...): Verifica si ese paso ya se realizó
+         * 
          * numJovenesEncontrados == 0: Verifica que hasta el momento no se haya
          * encontrado ningún joven, ya que de ser así, no será necesario seguir
          * avanzando y Teseo empecerá a devolverse al punto de partida.
          */
-        if ( juego &&  tableroAct[x + 1][y] != 1 && !camino.contains("" + x + "" + y + "" + (x + 1) + "" + y)
+        if (tableroAct[x + 1][y] != 1 && !camino.contains("" + x + "" + y + "" + (x + 1) + "" + y)
                 && numJovenesEncontrados == 0) {
             if (tableroAct[x + 1][y] == 2) {
                 notificar(0);
@@ -224,14 +281,14 @@ public class Logica{
             if(tableroAct[x][y] != 4)
                 tableroAct[x][y] = 0;
             
-            //tableroAct[x + 1][y] = 3;
             contarPasos();
-            tablero = tableroAct;
             camino.add("" + x + "" + y + "" + (x + 1) + "" + y);
-            recorrer((x + 1), y, tableroAct, "abajo");
+            xAnterior = x;
+            yAnterior = y;
+            recorrer((x + 1), y, tableroAct);
             if(tableroAct[x + 1][y] == 4){
                 tableroAct[x][y] = 3;
-                tableroAct[x + 1][y] = 4;
+                //tableroAct[x + 1][y] = 4;
             }else if(tableroAct[x][y] == 4){
                 tableroAct[x + 1][y] = 0;
             }else{
@@ -246,11 +303,17 @@ public class Logica{
         
         /**
          * MOVIMIENTO IZQUIERDA
+         * 
+         * tableroAct[x][y - 1] != 1: Verifica si la casilla que se encuentra
+         * a la izquierda no es un muro.
+         * 
+         * camino.contains(...): Verifica si ese paso ya se realizó
+         * 
          * numJovenesEncontrados == 0: Verifica que hasta el momento no se haya
          * encontrado ningún joven, ya que de ser así, no será necesario seguir
          * avanzando y Teseo empecerá a devolverse al punto de partida.
          */
-        if (y > 0 && juego &&  tableroAct[x][y - 1] != 1 && !camino.contains("" + x + "" + y + "" + x + "" + (y - 1))
+        if (y > 0 && tableroAct[x][y - 1] != 1 && !camino.contains("" + x + "" + y + "" + x + "" + (y - 1))
                 && numJovenesEncontrados == 0) {
             if (tableroAct[x][y - 1] == 2) {
                 notificar(0);
@@ -273,14 +336,15 @@ public class Logica{
             
             if(tableroAct[x][y] != 4)
                 tableroAct[x][y] = 0;
-            //tableroAct[x][y - 1] = 3;
+
             contarPasos();
-            tablero = tableroAct;
             camino.add("" + x + "" + y + "" + x + "" + (y - 1));
-            recorrer(x, (y - 1), tableroAct, "izquierda");
+            xAnterior = x;
+            yAnterior = y;
+            recorrer(x, (y - 1), tableroAct);
             if(tableroAct[x][y - 1] == 4){
                tableroAct[x][y] = 3;
-                tableroAct[x][y - 1] = 4; 
+                //tableroAct[x][y - 1] = 4; 
             }else if(tableroAct[x][y] == 4){
                 tableroAct[x][y - 1] = 0;
                 
@@ -292,6 +356,16 @@ public class Logica{
             contarPasos();
         }
         
+        
+        /**
+         * Se borran los jovenes rescatados que siguen a Teseo para
+         * después actualizar su posición.
+         */
+        if(numJovenesEncontrados > 0){
+            for(int i = 0; i<numJovenesEncontrados; i++)
+                tablero[posicionesJovenes[i*2]][posicionesJovenes[(i*2)+1]] = 0;
+        }
+        
         /**
          * Se verifica si existen jovenes en la posición actual,
          * al momento de retroceder en el algoritmo y los rescata.
@@ -301,8 +375,55 @@ public class Logica{
             numJovenesEncontrados++;
             tableroAct[x][y] = 0;
         }
+        
+        /**
+         * Se pintan los jovenes rescatados en el mapa, se hace uso del
+         * arreglo posicionesJovenes que guarda últimos pasos de Teseo y se
+         * ubican allí los jovenes.
+         */
+        if(numJovenesEncontrados > 0){
+            // Mostrar pasos de Teseo guardados
+            //System.out.println(Arrays.toString(posicionesJovenes));
+            
+            /**
+             * Actualización de las posiciones de los jovenes que siguen a Teseo,
+             * caso 2 jovenes.
+            **/
+            if(numJovenesEncontrados == 2){   
+                posicionesJovenes[2] = posicionesJovenes[0];
+                posicionesJovenes[3] = posicionesJovenes[1];
+                tablero[posicionesJovenes[2]][posicionesJovenes[3]] = 4;
+            }
+            
+            /**
+             * Actualización de las posiciones de los jovenes que siguen a Teseo,
+             * caso 3 jovenes.
+            **/
+            if(numJovenesEncontrados == 3){
+                posicionesJovenes[4] = posicionesJovenes[2];
+                posicionesJovenes[5] = posicionesJovenes[3];
+                posicionesJovenes[2] = posicionesJovenes[0];
+                posicionesJovenes[3] = posicionesJovenes[1];
+                tablero[posicionesJovenes[2]][posicionesJovenes[3]] = 4;
+                tablero[posicionesJovenes[4]][posicionesJovenes[5]] = 4;
+            }
+            
+            /**
+             * Actualización de la última posición de Teseo, que corresponde a 
+             * la posición del joven rescatado.
+             */
+            posicionesJovenes[0] = xAnterior;
+            posicionesJovenes[1] = yAnterior;
+            tablero[xAnterior][yAnterior] = 4;
+        }
         vista.getMapa().repintarMapa(tableroAct);
         pausar();
+        
+        /**
+         * Se guarda el último paso de Teseo
+         */
+        xAnterior = x;
+        yAnterior = y;
     }
     
     
